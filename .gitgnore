@@ -116,3 +116,5 @@ fabric.properties
 
 # MacOS Data
 **/.DS_Store
+
+.env
