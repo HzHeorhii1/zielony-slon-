@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZUT Schedule</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+</head>
+<body>
+<header>
+    <div class="logo">
+        <img src="logo.png" alt="ZUT Logo">
+
+    </div>
+    <div class="right-header">
+
+        <div class="share-btn">
+            <i class="fa-solid fa-share-nodes"></i>
+
+        </div>
+        <div class="favorite-btn">
+            <i class="fa-solid fa-heart"></i>
+            <div class="fav-dropdown">
+
+                <div class="fav-links">
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</header>
+
+<div class="container">
+
+    <aside class="sidebar">
+
+        <div class="filter-container">
+
+            <label>Wykładowca</label>
+            <input type="text" name="teacher">
+
+            <label>Sala</label>
+            <input type="text" name="room">
+
+            <label>Przedmiot</label>
+            <input type="text" name="subject">
+
+            <label>Grupa</label>
+            <input type="text" name="group">
+
+            <label>Numer Albumu</label>
+            <input type="text" name="albumNumber">
+
+            <div class="dropdown-filter">
+                <div class="dropdown-filter-header">
+                    <span> Filtry </span>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2.44117 7.92723C2.69339 8.15139 2.97995 8.28097 3.27496 8.28097H12.725C13.02 8.28097 13.3066 8.15139 13.5588 7.92723C13.8105 7.70342 13.9339 7.38318 13.9339 7.04825C13.9339 6.71332 13.8105 6.39308 13.5588 6.16927L8.11169 1.3388C7.98615 1.22432 7.84404 1.1489 7.69367 1.11842C7.54331 1.08794 7.38674 1.10345 7.24205 1.15847C7.09737 1.21349 6.9699 1.31303 6.87311 1.4357C6.77633 1.55838 6.71476 1.70045 6.69947 1.84935L2.20058 6.16787C1.95169 6.39275 1.82746 6.71352 1.82746 7.04825C1.82746 7.38298 1.95169 7.70375 2.20058 7.92787L2.44117 7.92723Z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div class="dropdown-content">
+                    <label>
+                        <input type="checkbox" value="laboratoria" name="filter">
+                        Laboratoria
+                    </label>
+                    <label>
+                        <input type="checkbox"  value="wyklady" name="filter">
+                        Wykłady
+                    </label>
+                    <label>
+                        <input type="checkbox"  value="audytoria" name="filter">
+                        Audytoria
+                    </label>
+                    <label>
+                        <input type="checkbox"  value="lektoraty" name="filter">
+                        Lektoraty
+                    </label>
+                </div>
+            </div>
+
+
+            <button class="search-btn">Szukaj</button>
+            <button class="reset-btn">Wyczyść filtry</button>
+
+
+        </div>
+    </aside>
+
+    <main class="schedule-container">
+
+
+        <div class="right-header">
+            <button class="dropdown-btn" id="view-changer">
+                <span class="dropdown-text">Tydzień</span>
+                <svg class="dropdown-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.44117 7.92723C2.69339 8.15139 2.97995 8.28097 3.27496 8.28097H12.725C13.02 8.28097 13.3066 8.15139 13.5588 7.92723C13.8105 7.70342 13.9339 7.38318 13.9339 7.04825C13.9339 6.71332 13.8105 6.39308 13.5588 6.16927L8.11169 1.3388C7.98615 1.22432 7.84404 1.1489 7.69367 1.11842C7.54331 1.08794 7.38674 1.10345 7.24205 1.15847C7.09737 1.21349 6.9699 1.31303 6.87311 1.4357C6.77633 1.55838 6.71476 1.70045 6.69947 1.84935L2.20058 6.16787C1.95169 6.39275 1.82746 6.71352 1.82746 7.04825C1.82746 7.38298 1.95169 7.70375 2.20058 7.92787L2.44117 7.92723Z" fill="currentColor"/>
+                </svg>
+            </button>
+
+            <div class="dropdown-menu">
+                <button class="dropdown-option" data-view="timeGridDay">Dzień</button>
+                <button class="dropdown-option" data-view="timeGridWeek">Tydzień</button>
+                <button class="dropdown-option" data-view="dayGridMonth">Miesiąc</button>
+            </div>
+        </div>
+
+        <div id='calendar'></div>
+
+    </main>
+
+</div>
+<footer>
+    <div class="legend"></div>
+    <div class="lesson-counter"></div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
