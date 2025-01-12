@@ -5,153 +5,96 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: "Schedule")]
+#[ORM\Table(name: "schedules")]
 class Schedule
 {
     #[ORM\Id]
-    #[ORM\Column(type: "integer")]
     #[ORM\GeneratedValue]
-    private ?int $scheduleld = null;
-
-    #[ORM\Column(type: "string")]
-    private ?string $startTime = null;
-
-    #[ORM\Column(type: "string")]
-    private ?string $endTime = null;
-
-    #[ORM\Column(type: "string")]
-    private ?string $lessonForm = null;
-
-    #[ORM\Column(type: "string")]
-    private ?string $status = null;
-
     #[ORM\Column(type: "integer")]
-    private ?int $hours = null;
+    private ?int $id = null;
 
     #[ORM\Column(type: "string")]
-    private ?string $color = null;
+    private ?string $title = null;
 
-    #[ORM\ManyToOne(targetEntity: "App\Entity\Subject", cascade: ["remove"])]
-    #[ORM\JoinColumn(name: "subjectId", referencedColumnName: "subjectId", onDelete: "CASCADE")]
-    private ?Subject $subject = null;
+    #[ORM\Column(type: "text", nullable: true)]
+    private ?string $description = null;
 
-    #[ORM\ManyToOne(targetEntity: "App\Entity\Group", cascade: ["remove"])]
-    #[ORM\JoinColumn(name: "groupld", referencedColumnName: "groupld", onDelete: "CASCADE")]
-    private ?Group $group = null;
+    #[ORM\Column(type: "datetime")]
+    private ?\DateTimeInterface $startTime = null;
 
-    #[ORM\ManyToOne(targetEntity: "App\Entity\Worker", cascade: ["remove"])]
-    #[ORM\JoinColumn(name: "workerld", referencedColumnName: "workerld", onDelete: "CASCADE")]
+    #[ORM\Column(type: "datetime")]
+    private ?\DateTimeInterface $endTime = null;
+
+    #[ORM\ManyToOne(targetEntity: "App\Entity\Worker")]
+    #[ORM\JoinColumn(name: "worker_id", referencedColumnName: "id", nullable: true)]
     private ?Worker $worker = null;
 
-    #[ORM\ManyToOne(targetEntity: "App\Entity\Room", cascade: ["remove"])]
-    #[ORM\JoinColumn(name: "roomld", referencedColumnName: "roomld", onDelete: "CASCADE")]
+    #[ORM\ManyToOne(targetEntity: "App\Entity\Room")]
+    #[ORM\JoinColumn(name: "room_id", referencedColumnName: "id", nullable: true)]
     private ?Room $room = null;
 
-    #[ORM\Column(type: "string")]
-    private ?string $lessonFormShort = null;
+    #[ORM\ManyToOne(targetEntity: "App\Entity\Group")]
+    #[ORM\JoinColumn(name: "group_id", referencedColumnName: "id", nullable: true)]
+    private ?Group $group = null;
 
-    #[ORM\Column(type: "string")]
-    private ?string $lessonStatusShort = null;
+    #[ORM\ManyToOne(targetEntity: "App\Entity\Subject")]
+    #[ORM\JoinColumn(name: "subject_id", referencedColumnName: "id", nullable: true)]
+    private ?Subject $subject = null;
 
-    #[ORM\Column(type: "string")]
-    private ?string $borderColor = null;
+    #[ORM\ManyToOne(targetEntity: "App\Entity\User")]
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "userld", nullable: true)]
+    private ?User $user = null;
 
-    public function getScheduleld(): ?int
+    #[ORM\Column(type: "string", nullable: true)]
+    private ?string $lessonForm = null;
+
+
+    public function getId(): ?int
     {
-        return $this->scheduleld;
+        return $this->id;
     }
 
-    public function setScheduleld(int $scheduleld): self
+    public function getTitle(): ?string
     {
-        $this->scheduleld = $scheduleld;
+        return $this->title;
+    }
+
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
         return $this;
     }
 
-    public function getStartTime(): ?string
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    public function getStartTime(): ?\DateTimeInterface
     {
         return $this->startTime;
     }
 
-    public function setStartTime(string $startTime): self
+    public function setStartTime(?\DateTimeInterface $startTime): self
     {
         $this->startTime = $startTime;
         return $this;
     }
 
-    public function getEndTime(): ?string
+    public function getEndTime(): ?\DateTimeInterface
     {
         return $this->endTime;
     }
 
-    public function setEndTime(string $endTime): self
+    public function setEndTime(?\DateTimeInterface $endTime): self
     {
         $this->endTime = $endTime;
-        return $this;
-    }
-
-    public function getLessonForm(): ?string
-    {
-        return $this->lessonForm;
-    }
-
-    public function setLessonForm(string $lessonForm): self
-    {
-        $this->lessonForm = $lessonForm;
-        return $this;
-    }
-
-    public function getStatus(): ?string
-    {
-        return $this->status;
-    }
-
-    public function setStatus(string $status): self
-    {
-        $this->status = $status;
-        return $this;
-    }
-
-    public function getHours(): ?int
-    {
-        return $this->hours;
-    }
-
-    public function setHours(int $hours): self
-    {
-        $this->hours = $hours;
-        return $this;
-    }
-
-    public function getColor(): ?string
-    {
-        return $this->color;
-    }
-
-    public function setColor(string $color): self
-    {
-        $this->color = $color;
-        return $this;
-    }
-
-    public function getSubject(): ?Subject
-    {
-        return $this->subject;
-    }
-
-    public function setSubject(?Subject $subject): self
-    {
-        $this->subject = $subject;
-        return $this;
-    }
-
-    public function getGroup(): ?Group
-    {
-        return $this->group;
-    }
-
-    public function setGroup(?Group $group): self
-    {
-        $this->group = $group;
         return $this;
     }
 
@@ -177,36 +120,44 @@ class Schedule
         return $this;
     }
 
-    public function getLessonFormShort(): ?string
+    public function getGroup(): ?Group
     {
-        return $this->lessonFormShort;
+        return $this->group;
     }
 
-    public function setLessonFormShort(string $lessonFormShort): self
+    public function setGroup(?Group $group): self
     {
-        $this->lessonFormShort = $lessonFormShort;
+        $this->group = $group;
         return $this;
     }
 
-    public function getLessonStatusShort(): ?string
+    public function getSubject(): ?Subject
     {
-        return $this->lessonStatusShort;
+        return $this->subject;
     }
-
-    public function setLessonStatusShort(string $lessonStatusShort): self
+    public function setSubject(?Subject $subject): self
     {
-        $this->lessonStatusShort = $lessonStatusShort;
+        $this->subject = $subject;
+        return $this;
+    }
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
         return $this;
     }
 
-    public function getBorderColor(): ?string
+    public function getLessonForm(): ?string
     {
-        return $this->borderColor;
+        return $this->lessonForm;
     }
 
-    public function setBorderColor(string $borderColor): self
+    public function setLessonForm(?string $lessonForm): self
     {
-        $this->borderColor = $borderColor;
+        $this->lessonForm = $lessonForm;
         return $this;
     }
 }

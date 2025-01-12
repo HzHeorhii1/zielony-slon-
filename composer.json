@@ -2,7 +2,7 @@
     "name": "georgijguzuk/zielony-slon",
     "autoload": {
         "psr-4": {
-            "Georgijguzuk\\ZielonySlon\\": "src/"
+            "App\\": "src/"
         }
     },
     "authors": [
@@ -14,6 +14,14 @@
         "vlucas/phpdotenv": "^5.6",
         "doctrine/orm": "^2.7",
         "doctrine/cache": "^1.11",
-        "doctrine/annotations": "^2.0"
+        "doctrine/annotations": "^2.0",
+        "symfony/console": "^7.2",
+        "guzzlehttp/guzzle": "^7.8",
+        "symfony/http-foundation": "^6.4",
+        "symfony/routing": "^6.4",
+        "symfony/http-kernel": "^6.4",
+        "symfony/config": "^6.4",
+        "symfony/event-dispatcher": "^6.4",
+        "symfony/framework-bundle": "^7.1"
     }
 }

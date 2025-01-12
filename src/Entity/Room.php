@@ -5,26 +5,20 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: "Room")]
+#[ORM\Table(name: "rooms")]
 class Room
 {
     #[ORM\Id]
-    #[ORM\Column(type: "integer")]
     #[ORM\GeneratedValue]
-    private ?int $roomld = null;
+    #[ORM\Column(type: "integer")]
+    private ?int $id = null;
 
     #[ORM\Column(type: "string")]
     private ?string $name = null;
 
-    public function getRoomld(): ?int
+    public function getId(): ?int
     {
-        return $this->roomld;
-    }
-
-    public function setRoomld(int $roomld): self
-    {
-        $this->roomld = $roomld;
-        return $this;
+        return $this->id;
     }
 
     public function getName(): ?string
