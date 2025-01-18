@@ -1,29 +1,33 @@
 <?php
+
 // bootstrap.php
-require_once "vendor/autoload.php";
+// Custom autoloader
+spl_autoload_register(function ($class) {
+    $prefix = 'App\\';
+    $base_dir = __DIR__ . '/src/';
+    $len = strlen($prefix);
 
-use Doctrine\ORM\Tools\Setup;
-use Doctrine\ORM\EntityManager;
-use Doctrine\DBAL\DriverManager;
-use Dotenv\Dotenv;
+    if (strncmp($prefix, $class, $len) !== 0) {
+        return;
+    }
 
-$paths = [__DIR__ . "/src/Entity"];
-$isDevMode = true;
+    $relative_class = substr($class, $len);
 
-$dotenv = Dotenv::createImmutable(__DIR__);
-$dotenv->load();
+    $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
 
-$dbParams = [
-    'dbname' => $_ENV['DB_NAME'],
-    'user' => $_ENV['DB_USER'],
-    'password' => $_ENV['DB_PASSWORD'],
-    'host' => $_ENV['DB_HOST'],
-    'driver' => $_ENV['DB_DRIVER'],
-    'charset' => $_ENV['DB_CHARSET'],
-];
+    if (file_exists($file)) {
+        require $file;
+    }
+});
 
-$config = Setup::createAttributeMetadataConfiguration($paths, $isDevMode);
-$connection = DriverManager::getConnection($dbParams, $config);
-$entityManager = new EntityManager($connection, $config);
-
-return $entityManager;
+// .env
+$dotenvPath = __DIR__ . '/.env';
+if (file_exists($dotenvPath)) {
+    $dotenv = parse_ini_file($dotenvPath);
+    if ($dotenv) {
+        foreach ($dotenv as $key => $value) {
+            $_ENV[$key] = $value;
+            $_SERVER[$key] = $value;
+        }
+    }
+}

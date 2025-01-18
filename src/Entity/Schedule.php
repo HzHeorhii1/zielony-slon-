@@ -2,21 +2,19 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use App\ORM\Mapping as ORM;
 
-#[ORM\Entity]
 #[ORM\Table(name: "schedules")]
 class Schedule
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
     private ?int $id = null;
 
     #[ORM\Column(type: "string")]
     private ?string $title = null;
 
-    #[ORM\Column(type: "text", nullable: true)]
+    #[ORM\Column(type: "text")]
     private ?string $description = null;
 
     #[ORM\Column(type: "datetime")]
@@ -25,29 +23,22 @@ class Schedule
     #[ORM\Column(type: "datetime")]
     private ?\DateTimeInterface $endTime = null;
 
-    #[ORM\ManyToOne(targetEntity: "App\Entity\Worker")]
-    #[ORM\JoinColumn(name: "worker_id", referencedColumnName: "id", nullable: true)]
-    private ?Worker $worker = null;
+    #[ORM\Column(type: "integer")]
+    private ?int $worker_id = null;
 
-    #[ORM\ManyToOne(targetEntity: "App\Entity\Room")]
-    #[ORM\JoinColumn(name: "room_id", referencedColumnName: "id", nullable: true)]
-    private ?Room $room = null;
+    #[ORM\Column(type: "integer")]
+    private ?int $room_id = null;
 
-    #[ORM\ManyToOne(targetEntity: "App\Entity\Group")]
-    #[ORM\JoinColumn(name: "group_id", referencedColumnName: "id", nullable: true)]
-    private ?Group $group = null;
+    #[ORM\Column(type: "integer")]
+    private ?int $group_id = null;
 
-    #[ORM\ManyToOne(targetEntity: "App\Entity\Subject")]
-    #[ORM\JoinColumn(name: "subject_id", referencedColumnName: "id", nullable: true)]
-    private ?Subject $subject = null;
+    #[ORM\Column(type: "integer")]
+    private ?int $subject_id = null;
+    #[ORM\Column(type: "integer")]
+    private ?int $user_id = null;
 
-    #[ORM\ManyToOne(targetEntity: "App\Entity\User")]
-    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "userld", nullable: true)]
-    private ?User $user = null;
-
-    #[ORM\Column(type: "string", nullable: true)]
+    #[ORM\Column(type: "string")]
     private ?string $lessonForm = null;
-
 
     public function getId(): ?int
     {
@@ -98,55 +89,55 @@ class Schedule
         return $this;
     }
 
-    public function getWorker(): ?Worker
+    public function getWorkerId(): ?int
     {
-        return $this->worker;
+        return $this->worker_id;
     }
 
-    public function setWorker(?Worker $worker): self
+    public function setWorkerId(?int $worker_id): self
     {
-        $this->worker = $worker;
+        $this->worker_id = $worker_id;
         return $this;
     }
 
-    public function getRoom(): ?Room
+    public function getRoomId(): ?int
     {
-        return $this->room;
+        return $this->room_id;
     }
 
-    public function setRoom(?Room $room): self
+    public function setRoomId(?int $room_id): self
     {
-        $this->room = $room;
+        $this->room_id = $room_id;
         return $this;
     }
 
-    public function getGroup(): ?Group
+    public function getGroupId(): ?int
     {
-        return $this->group;
+        return $this->group_id;
     }
 
-    public function setGroup(?Group $group): self
+    public function setGroupId(?int $group_id): self
     {
-        $this->group = $group;
+        $this->group_id = $group_id;
         return $this;
     }
 
-    public function getSubject(): ?Subject
+    public function getSubjectId(): ?int
     {
-        return $this->subject;
+        return $this->subject_id;
     }
-    public function setSubject(?Subject $subject): self
+    public function setSubjectId(?int $subject_id): self
     {
-        $this->subject = $subject;
+        $this->subject_id = $subject_id;
         return $this;
     }
-    public function getUser(): ?User
+    public function getUserId(): ?int
     {
-        return $this->user;
+        return $this->user_id;
     }
-    public function setUser(?User $user): self
+    public function setUserId(?int $user_id): self
     {
-        $this->user = $user;
+        $this->user_id = $user_id;
         return $this;
     }
 

@@ -2,15 +2,13 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use App\ORM\Mapping as ORM;
 
-#[ORM\Entity]
 #[ORM\Table(name: "User")]
 class User
 {
     #[ORM\Id]
     #[ORM\Column(type: "integer")]
-    #[ORM\GeneratedValue]
     private ?int $userld = null;
 
     #[ORM\Column(type: "integer")]

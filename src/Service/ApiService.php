@@ -2,15 +2,15 @@
 
 namespace App\Service;
 
-use Doctrine\ORM\EntityManagerInterface;
+use App\ORM\EntityManager;
 
 class ApiService
 {
-    private EntityManagerInterface $entityManager;
+    private EntityManager $entityManager;
     private ScraperService $scraperService;
 
     public function __construct(
-        EntityManagerInterface $entityManager,
+        EntityManager $entityManager,
         ScraperService $scraperService
     ) {
         $this->entityManager = $entityManager;
@@ -34,24 +34,24 @@ class ApiService
         if (!$user) {
             return [];
         }
-        $qb = $this->entityManager->createQueryBuilder();
-        $qb->select("s")
+        $qb = $this->entityManager->getRepository("App\Entity\Schedule")->createQueryBuilder();
+        $qb->select('*')
             ->from("App\Entity\Schedule", "s")
-            ->where("s.user = :user")
-            ->setParameter("user", $user)
+            ->where("s.user_id = :user_id")
+            ->setParameter("user_id", $user->getUserld())
             ->orderBy("s.startTime", "ASC");
         if ($teacher) {
-            $qb->join("s.worker", "w")
+            $qb->join("App\Entity\Worker", 'w','s.worker_id = w.id')
                 ->andWhere("w.name = :teacher")
                 ->setParameter("teacher", $teacher);
         }
         if ($room) {
-            $qb->join("s.room", "r")
+            $qb->join("App\Entity\Room", 'r','s.room_id = r.id')
                 ->andWhere("r.name = :room")
                 ->setParameter("room", $room);
         }
         if ($group) {
-            $qb->join("s.group", "g")
+            $qb->join("App\Entity\Group",'g','s.group_id = g.id')
                 ->andWhere("g.name = :group")
                 ->setParameter("group", $group);
         }
@@ -85,12 +85,12 @@ class ApiService
         }
 
         if ($kind === "subject" && $query) {
-            $qb->join("s.subject", "subj")
+            $qb->join("App\Entity\Subject", "subj",'s.subject_id = subj.id')
                 ->andWhere("subj.title = :query")
                 ->setParameter("query", $query);
         }
 
-        $schedules = $qb->getQuery()->getResult();
+        $schedules = $qb->getQuery();
         $result = [];
         $lessonTypeColors = [
             'laboratorium' => '#1A8238',
@@ -136,6 +136,51 @@ class ApiService
     }
     private function formatScheduleData($schedule): array
     {
+        $worker = null;
+        $room = null;
+        $group = null;
+        $subject = null;
+
+        if($schedule->getWorkerId()){
+            $worker = $this->entityManager->getRepository('App\Entity\Worker')->find($schedule->getWorkerId());
+            if($worker){
+                $worker = [
+                    "id" => $worker->getId(),
+                    "name" => $worker->getName(),
+                ];
+            }
+        }
+
+        if($schedule->getRoomId()){
+            $room = $this->entityManager->getRepository('App\Entity\Room')->find($schedule->getRoomId());
+            if($room){
+                $room = [
+                    "id" => $room->getId(),
+                    "name" => $room->getName(),
+                ];
+            }
+        }
+        if($schedule->getGroupId()){
+            $group = $this->entityManager->getRepository('App\Entity\Group')->find($schedule->getGroupId());
+            if($group){
+                $group = [
+                    "id" => $group->getId(),
+                    "name" => $group->getName(),
+                ];
+            }
+
+        }
+        if($schedule->getSubjectId()){
+            $subject = $this->entityManager->getRepository('App\Entity\Subject')->find($schedule->getSubjectId());
+            if($subject){
+                $subject =  [
+                    "id" => $subject->getId(),
+                    "title" => $subject->getTitle(),
+                ];
+            }
+
+        }
+
         return [
             "id" => $schedule->getId(),
             "title" => $schedule->getTitle(),
@@ -143,30 +188,10 @@ class ApiService
             "startTime" => $schedule->getStartTime()->format("Y-m-d H:i:s"),
             "endTime" => $schedule->getEndTime()->format("Y-m-d H:i:s"),
             "lesson_form"=>$schedule->getLessonForm(),
-            "worker" => $schedule->getWorker()
-                ? [
-                    "id" => $schedule->getWorker()->getId(),
-                    "name" => $schedule->getWorker()->getName(),
-                ]
-                : null,
-            "room" => $schedule->getRoom()
-                ? [
-                    "id" => $schedule->getRoom()->getId(),
-                    "name" => $schedule->getRoom()->getName(),
-                ]
-                : null,
-            "group" => $schedule->getGroup()
-                ? [
-                    "id" => $schedule->getGroup()->getId(),
-                    "name" => $schedule->getGroup()->getName(),
-                ]
-                : null,
-            "subject" => $schedule->getSubject()
-                ? [
-                    "id" => $schedule->getSubject()->getId(),
-                    "title" => $schedule->getSubject()->getTitle(),
-                ]
-                : null,
+            "worker" => $worker,
+            "room" => $room,
+            "group" => $group,
+            "subject" => $subject,
         ];
     }
 }

@@ -2,14 +2,15 @@
 
 namespace App\Service;
 
-use Doctrine\ORM\EntityManagerInterface;
+
+use App\ORM\EntityManager;
 use App\Entity\Schedule;
 
 class ScheduleCleanupService
 {
-    private EntityManagerInterface $entityManager;
+    private EntityManager $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
     }
@@ -19,7 +20,7 @@ class ScheduleCleanupService
         $schedules = $this->entityManager->getRepository(Schedule::class)->findAll();
 
         foreach ($schedules as $schedule) {
-            if($schedule->getUser()){
+            if($schedule->getUserId()){
                 $this->entityManager->remove($schedule);
             }
 

@@ -2,14 +2,12 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use App\ORM\Mapping as ORM;
 
-#[ORM\Entity]
 #[ORM\Table(name: "subjects")]
 class Subject
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
     private ?int $id = null;
 

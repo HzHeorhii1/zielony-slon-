@@ -2,14 +2,13 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+// no doctrine
+use App\ORM\Mapping as ORM;
 
-#[ORM\Entity]
 #[ORM\Table(name: "workers")]
 class Worker
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
     private ?int $id = null;
 

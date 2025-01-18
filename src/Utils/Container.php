@@ -2,8 +2,8 @@
 
 namespace App\Utils;
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
+use App\ORM\EntityManager;
+use App\ORM\EntityManagerInterface;
 
 class Container
 {
@@ -11,8 +11,8 @@ class Container
 
     public function __construct(EntityManager $entityManager)
     {
-        $this->services["Doctrine\ORM\EntityManager"] = $entityManager;
-        $this->services[EntityManagerInterface::class] = $entityManager;
+        $this->services["App\ORM\EntityManager"] = $entityManager;
+        // $this->services[EntityManagerInterface::class] = $entityManager;
     }
 
     public function get(string $id): mixed

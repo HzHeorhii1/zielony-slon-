@@ -2,9 +2,7 @@
 
 namespace App\Service;
 
-use Doctrine\ORM\EntityManagerInterface;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
+use App\ORM\EntityManager;
 use App\Entity\Worker;
 use App\Entity\Room;
 use App\Entity\Group;
@@ -14,12 +12,10 @@ use App\Entity\User;
 
 class ScraperService
 {
-    private Client $client;
-    private EntityManagerInterface $entityManager;
+    private EntityManager $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManager $entityManager)
     {
-        $this->client = new Client();
         $this->entityManager = $entityManager;
     }
 
@@ -29,9 +25,17 @@ class ScraperService
             $url =
                 "https://plan.zut.edu.pl/schedule.php?kind={$kind}&query=" .
                 urlencode($query);
-            $response = $this->client->get($url);
-            $data = json_decode($response->getBody(), true);
-        } catch (GuzzleException $e) {
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            if ($httpCode !== 200) {
+                throw new \Exception("HTTP Error: $httpCode");
+            }
+
+            $data = json_decode($response, true);
+            curl_close($ch);
+        } catch (\Exception $e) {
             return ["error" => "Failed to fetch data: " . $e->getMessage()];
         }
 
@@ -72,10 +76,16 @@ class ScraperService
                 $url .=
                     "&start=" . urlencode($start) . "&end=" . urlencode($end);
             }
-
-            $response = $this->client->get($url);
-            $data = json_decode($response->getBody(), true);
-        } catch (GuzzleException $e) {
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            if ($httpCode !== 200) {
+                throw new \Exception("HTTP Error: $httpCode");
+            }
+            $data = json_decode($response, true);
+            curl_close($ch);
+        } catch (\Exception $e) {
             return [
                 "error" => "Failed to fetch schedule data: " . $e->getMessage(),
             ];
@@ -112,6 +122,21 @@ class ScraperService
             return ["message" => "Data scraped and saved successfully"];
         }
     }
+    public function scrapeAndSaveAllStudentSchedules(): void
+    {
+        $users = $this->entityManager->getRepository(User::class)->findAll();
+        $startDate = new \DateTime('2024-10-01');
+        $endDate = new \DateTime('2025-02-14');
+        foreach ($users as $user) {
+            $this->scrapeAndSaveSchedule(
+                "student",
+                $user->getNrAlbumu(),
+                $startDate->format('Y-m-d\TH:i:sO'),
+                $endDate->format('Y-m-d\TH:i:sO')
+            );
+        }
+
+    }
     private function saveEntity(string $kind, string $name): void
     {
         switch ($kind) {
@@ -140,8 +165,14 @@ class ScraperService
     }
     private function saveUser(string $nrAlbumu): void
     {
-        $user = (new User())->setNrAlbumu($nrAlbumu);
-        $this->entityManager->persist($user);
+        $user = $this->entityManager
+            ->getRepository(User::class)
+            ->findOneBy(["nrAlbumu" => $nrAlbumu]);
+        if(!$user) {
+            $user = (new User())->setNrAlbumu($nrAlbumu);
+            $this->entityManager->persist($user);
+        }
+
         $this->entityManager->flush();
     }
     private function deleteOldSchedule(string $type, string $id): void
@@ -152,7 +183,7 @@ class ScraperService
                 ->getRepository(User::class)
                 ->findOneBy(["nrAlbumu" => $id]);
             if ($user) {
-                $oldSchedules = $repository->findBy(["user" => $user]);
+                $oldSchedules = $repository->findBy(["user_id" => $user->getUserld()]);
             }
         }
         if ($type === "teacher") {
@@ -160,7 +191,7 @@ class ScraperService
                 ->getRepository(Worker::class)
                 ->findOneBy(["name" => $id]);
             if ($teacher) {
-                $oldSchedules = $repository->findBy(["worker" => $teacher]);
+                $oldSchedules = $repository->findBy(["worker_id" => $teacher->getId()]);
             }
         }
         if ($type === "room") {
@@ -168,7 +199,7 @@ class ScraperService
                 ->getRepository(Room::class)
                 ->findOneBy(["name" => $id]);
             if ($room) {
-                $oldSchedules = $repository->findBy(["room" => $room]);
+                $oldSchedules = $repository->findBy(["room_id" => $room->getId()]);
             }
         }
         if (isset($oldSchedules)) {
@@ -239,11 +270,12 @@ class ScraperService
                     ->getRepository(Worker::class)
                     ->findOneBy(["name" => $workerName]);
                 if (!$worker) {
-                    // If worker does not exist, create new
                     $worker = (new Worker())->setName($workerName);
                     $this->entityManager->persist($worker);
+                    $this->entityManager->flush();
                 }
-                $schedule->setWorker($worker);
+
+                $schedule->setWorkerId($worker->getId());
             }
             //Room
             if (
@@ -255,11 +287,13 @@ class ScraperService
                 $room = $this->entityManager
                     ->getRepository(Room::class)
                     ->findOneBy(["name" => $roomName]);
+
                 if (!$room) {
                     $room = (new Room())->setName($roomName);
                     $this->entityManager->persist($room);
+                    $this->entityManager->flush();
                 }
-                $schedule->setRoom($room);
+                $schedule->setRoomId($room->getId());
             }
 
             //Group
@@ -275,8 +309,9 @@ class ScraperService
                 if (!$group) {
                     $group = (new Group())->setName($groupName);
                     $this->entityManager->persist($group);
+                    $this->entityManager->flush();
                 }
-                $schedule->setGroup($group);
+                $schedule->setGroupId($group->getId());
             }
             //Subject
             if (
@@ -291,19 +326,21 @@ class ScraperService
                 if (!$subject) {
                     $subject = (new Subject())->setTitle($subjectTitle);
                     $this->entityManager->persist($subject);
+                    $this->entityManager->flush();
                 }
-                $schedule->setSubject($subject);
+                $schedule->setSubjectId($subject->getId());
             }
             if ($type === "student" && $id) {
                 $user = $this->entityManager
                     ->getRepository(User::class)
                     ->findOneBy(["nrAlbumu" => $id]);
                 if ($user) {
-                    $schedule->setUser($user);
+                    $schedule->setUserId($user->getUserld());
                 }
             }
             $this->entityManager->persist($schedule);
             $this->entityManager->flush();
+
 
         } catch (\Exception $e) {
             return;
