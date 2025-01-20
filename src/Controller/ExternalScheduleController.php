@@ -2,20 +2,11 @@
 
 namespace App\Controller;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
+use App\Utils\JsonResponse;
+use App\Utils\Request;
 
 class ExternalScheduleController
 {
-    private Client $client;
-
-    public function __construct()
-    {
-        $this->client = new Client();
-    }
-
     public function getExternalSchedule(Request $request): JsonResponse
     {
 
@@ -25,17 +16,23 @@ class ExternalScheduleController
 
         try {
             $url = $baseUrl . '?' . $queryString;
-            $response = $this->client->get($url);
-            $data = json_decode($response->getBody(), true);
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            if ($httpCode !== 200) {
+                throw new \Exception("HTTP Error: $httpCode");
+            }
+
+            $data = json_decode($response, true);
             if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
                 throw new \Exception("Invalid JSON response from plan.zut.edu.pl");
             }
+            curl_close($ch);
             $formattedData = $this->formatExternalScheduleData($data);
             return new JsonResponse($formattedData);
 
-        } catch (GuzzleException $e) {
-            return new JsonResponse(['error' => 'Failed to fetch schedule from plan.zut.edu.pl: ' . $e->getMessage()], 500);
-        } catch (\Exception $e) {
+        }  catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 500);
         }
     }

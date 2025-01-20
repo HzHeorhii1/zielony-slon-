@@ -2,26 +2,14 @@
 
 namespace App\Controller;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
-use Symfony\Component\HttpKernel\KernelInterface;
-
+use App\Utils\JsonResponse;
+use App\Utils\Request;
 class ApiController
 {
-    private Client $client;
-
-    public function __construct()
-    {
-        $this->client = new Client();
-    }
-
 
     public function getSuggestions(Request $request, string $kind): JsonResponse
     {
-        $query = $request->query->get('query');
+        $query = $request->query['query'] ?? null;
         if (!$query) {
             return new JsonResponse([]);
         }
@@ -30,14 +18,21 @@ class ApiController
                 "https://plan.zut.edu.pl/schedule.php?kind={$kind}&query=" .
                 urlencode($query);
 
-            $response = $this->client->get($url);
-            $data = json_decode($response->getBody(), true);
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            if ($httpCode !== 200) {
+                throw new \Exception("HTTP Error: $httpCode");
+            }
+            $data = json_decode($response, true);
 
             if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
                 throw new \Exception("Invalid JSON response from plan.zut.edu.pl");
             }
+            curl_close($ch);
             return new JsonResponse($data);
-        } catch (GuzzleException $e) {
+        } catch (\Exception $e) {
             return new JsonResponse(
                 [
                     "error" =>
@@ -46,8 +41,6 @@ class ApiController
                 ],
                 500
             );
-        } catch (\Exception $e) {
-            return new JsonResponse(["error" => $e->getMessage()], 500);
         }
     }
 }

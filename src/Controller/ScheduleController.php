@@ -3,9 +3,9 @@
 namespace App\Controller;
 
 use App\Service\ApiService;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use App\Utils\JsonResponse;
+use App\Utils\Request;
+use App\Utils\Route;
 
 class ScheduleController
 {

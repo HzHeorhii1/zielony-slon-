@@ -4,17 +4,14 @@ namespace App\Controller;
 
 use App\Service\ApiService;
 use App\Service\ScraperService;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
+use App\Utils\JsonResponse;
+use App\Utils\Request;
+use App\Utils\Route;
 
 class UserScheduleController
 {
     private ApiService $apiService;
     private ScraperService $scraperService;
-    private Client $client;
 
     public function __construct(
         ApiService $apiService,
@@ -22,20 +19,19 @@ class UserScheduleController
     ) {
         $this->apiService = $apiService;
         $this->scraperService = $scraperService;
-        $this->client = new Client();
     }
 
     #[Route("/api/user/schedule", methods: ["GET"])]
     public function getUserSchedule(Request $request): JsonResponse
     {
-        $studentId = $request->query->get("id");
-        $start = $request->query->get("start");
-        $end = $request->query->get("end");
-        $kind = $request->query->get("kind");
-        $query = $request->query->get("query");
-        $teacher = $request->query->get("teacher");
-        $room = $request->query->get("room");
-        $group = $request->query->get("group");
+        $studentId = $request->query["id"] ?? null;
+        $start = $request->query["start"] ?? null;
+        $end = $request->query["end"] ?? null;
+        $kind = $request->query["kind"] ?? null;
+        $query = $request->query["query"] ?? null;
+        $teacher = $request->query["teacher"] ?? null;
+        $room = $request->query["room"] ?? null;
+        $group = $request->query["group"] ?? null;
 
         if (!$studentId && ($teacher || $room || $group || $query)) {
 
@@ -54,18 +50,24 @@ class UserScheduleController
 
 
             try {
-                $response = $this->client->get($url);
-                $data = json_decode($response->getBody(), true);
+                $ch = curl_init($url);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                $response = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                if ($httpCode !== 200) {
+                    throw new \Exception("HTTP Error: $httpCode");
+                }
+                $data = json_decode($response, true);
+                curl_close($ch);
 
                 if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
                     throw new \Exception("Invalid JSON response from plan.zut.edu.pl");
                 }
+
                 $formattedData = $this->formatExternalScheduleData($data);
                 return new JsonResponse($formattedData);
-            } catch (GuzzleException $e) {
+            } catch (\Exception $e) {
                 return new JsonResponse(['error' => 'Failed to fetch schedule from plan.zut.edu.pl: ' . $e->getMessage()], 500);
-            }  catch (\Exception $e) {
-                return new JsonResponse(['error' => $e->getMessage()], 500);
             }
         }
 

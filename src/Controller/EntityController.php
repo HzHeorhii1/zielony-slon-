@@ -2,21 +2,20 @@
 
 namespace App\Controller;
 
-//use App\Utils\Container;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
+use App\ORM\EntityManager;
+use App\Utils\JsonResponse;
+use App\Utils\Request;
+use App\Utils\SerializerInterface;
+use App\Utils\JsonEncoder;
+use App\Utils\ObjectNormalizer;
+use App\Utils\Serializer;
 
 class EntityController
 {
-    private EntityManagerInterface $entityManager;
+    private EntityManager $entityManager;
     private SerializerInterface $serializer;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
         $encoders = [new JsonEncoder()];
