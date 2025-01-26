@@ -16,6 +16,11 @@
     </div>
     <div class="right-header">
 
+        <div class="language-switcher">
+            <span class="lang active" data-lang="pl">PL</span>
+            <span class="lang"  data-lang="en">EN</span>
+        </div>
+
         <div class="share-btn">
             <i class="fa-solid fa-share-nodes"></i>
 
@@ -39,51 +44,51 @@
 
         <div class="filter-container">
 
-            <label>Wykładowca</label>
+            <label data-translation-key="teacher">Wykładowca</label>
             <input type="text" name="teacher">
 
-            <label>Sala</label>
+            <label data-translation-key="room">Sala</label>
             <input type="text" name="room">
 
-            <label>Przedmiot</label>
+            <label data-translation-key="subject">Przedmiot</label>
             <input type="text" name="subject">
 
-            <label>Grupa</label>
+            <label data-translation-key="group">Grupa</label>
             <input type="text" name="group">
 
-            <label>Numer Albumu</label>
+            <label data-translation-key="albumNumber">Numer Albumu</label>
             <input type="text" name="albumNumber">
 
             <div class="dropdown-filter">
                 <div class="dropdown-filter-header">
-                    <span> Filtry </span>
+                    <span data-translation-key="filters"> Filtry </span>
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M2.44117 7.92723C2.69339 8.15139 2.97995 8.28097 3.27496 8.28097H12.725C13.02 8.28097 13.3066 8.15139 13.5588 7.92723C13.8105 7.70342 13.9339 7.38318 13.9339 7.04825C13.9339 6.71332 13.8105 6.39308 13.5588 6.16927L8.11169 1.3388C7.98615 1.22432 7.84404 1.1489 7.69367 1.11842C7.54331 1.08794 7.38674 1.10345 7.24205 1.15847C7.09737 1.21349 6.9699 1.31303 6.87311 1.4357C6.77633 1.55838 6.71476 1.70045 6.69947 1.84935L2.20058 6.16787C1.95169 6.39275 1.82746 6.71352 1.82746 7.04825C1.82746 7.38298 1.95169 7.70375 2.20058 7.92787L2.44117 7.92723Z" fill="currentColor"/>
                     </svg>
                 </div>
                 <div class="dropdown-content">
                     <label>
-                        <input type="checkbox" value="laboratoria" name="filter">
+                        <input type="checkbox" value="laboratoria" name="filter" data-translation-key="laboratoria">
                         Laboratoria
                     </label>
                     <label>
-                        <input type="checkbox"  value="wyklady" name="filter">
+                        <input type="checkbox"  value="wyklady" name="filter" data-translation-key="wyklady">
                         Wykłady
                     </label>
                     <label>
-                        <input type="checkbox"  value="audytoria" name="filter">
+                        <input type="checkbox"  value="audytoria" name="filter" data-translation-key="audytoria">
                         Audytoria
                     </label>
                     <label>
-                        <input type="checkbox"  value="lektoraty" name="filter">
+                        <input type="checkbox"  value="lektoraty" name="filter" data-translation-key="lektoraty">
                         Lektoraty
                     </label>
                 </div>
             </div>
 
 
-            <button class="search-btn">Szukaj</button>
-            <button class="reset-btn">Wyczyść filtry</button>
+            <button class="search-btn" data-translation-key="search">Szukaj</button>
+            <button class="reset-btn" data-translation-key="reset">Wyczyść filtry</button>
 
 
         </div>
@@ -94,16 +99,16 @@
 
         <div class="right-header">
             <button class="dropdown-btn" id="view-changer">
-                <span class="dropdown-text">Tydzień</span>
+                <span class="dropdown-text" data-translation-key="week">Tydzień</span>
                 <svg class="dropdown-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M2.44117 7.92723C2.69339 8.15139 2.97995 8.28097 3.27496 8.28097H12.725C13.02 8.28097 13.3066 8.15139 13.5588 7.92723C13.8105 7.70342 13.9339 7.38318 13.9339 7.04825C13.9339 6.71332 13.8105 6.39308 13.5588 6.16927L8.11169 1.3388C7.98615 1.22432 7.84404 1.1489 7.69367 1.11842C7.54331 1.08794 7.38674 1.10345 7.24205 1.15847C7.09737 1.21349 6.9699 1.31303 6.87311 1.4357C6.77633 1.55838 6.71476 1.70045 6.69947 1.84935L2.20058 6.16787C1.95169 6.39275 1.82746 6.71352 1.82746 7.04825C1.82746 7.38298 1.95169 7.70375 2.20058 7.92787L2.44117 7.92723Z" fill="currentColor"/>
                 </svg>
             </button>
 
             <div class="dropdown-menu">
-                <button class="dropdown-option" data-view="timeGridDay">Dzień</button>
-                <button class="dropdown-option" data-view="timeGridWeek">Tydzień</button>
-                <button class="dropdown-option" data-view="dayGridMonth">Miesiąc</button>
+                <button class="dropdown-option" data-view="timeGridDay" data-translation-key="day">Dzień</button>
+                <button class="dropdown-option" data-view="timeGridWeek" data-translation-key="week">Tydzień</button>
+                <button class="dropdown-option" data-view="dayGridMonth" data-translation-key="month">Miesiąc</button>
             </div>
         </div>
 
@@ -114,7 +119,9 @@
 </div>
 <footer>
     <div class="legend"></div>
-    <div class="lesson-counter"></div>
+    <div class="lesson-counter">
+        <span data-translation-key="total"></span>
+    </div>
 </footer>
 
 <script src="script.js"></script>

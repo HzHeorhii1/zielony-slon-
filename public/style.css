@@ -36,25 +36,25 @@ header{
 .dropdown-btn {
     cursor: pointer;
     border: 1px solid #366283;
-    padding: 0.6em 1.5em;
+    padding: 0.6em 1.5em; /* Оставляем место для стрелки */
     color: black;
     border-radius: 20px;
     background: transparent;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 8px; /* Отступ между текстом и стрелкой */
     position: relative;
 }
 
 .dropdown-arrow {
     width: 16px;
     height: 16px;
-    transition: transform 0.3s ease-in-out;
+    transition: transform 0.3s ease-in-out; /* Анимация */
     transform: rotate(180deg);
 
 }
 
-
+/* Анимация стрелки при активном меню */
 .dropdown-btn.active .dropdown-arrow {
     transform: rotate(360deg);
 }
@@ -86,12 +86,26 @@ header{
     background: #f0f0f0;
 }
 
-
+/* Показываем меню, если у него есть класс active */
 .dropdown-menu.active {
     display: block;
 }
 
 
+
+.language-switcher {
+    display: flex;
+}
+.language-switcher .lang{
+    padding: 0.5em;
+    border-radius: 5px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.language-switcher .lang.active {
+    background: #008080;
+    color:#fff
+}
 .share-btn,
 .favorite-btn {
     padding: 0.7em;
@@ -116,8 +130,8 @@ header{
     padding: 0.5em 0;
     max-width: 300px;
     box-sizing: border-box;
-    overflow-y: auto;
-    max-height: 300px;
+    overflow-y: auto; /* Додає вертикальну прокрутку */
+    max-height: 300px; /* Обмежує максимальну висоту прокручуваного списку */
 }
 .favorite-btn:hover .fav-dropdown{
     display: block;
@@ -216,6 +230,90 @@ header{
 .date-switcher  button svg {
     width: 20px;
 }
+
+.calendar-view {
+    overflow-x: auto;
+    margin-top: 1em;
+}
+
+/* CSS GRID styles */
+.week-view {
+    display: grid;
+    grid-gap: 1em;
+    grid-template-rows:
+    [tracks] auto
+    [time-0700] 1fr
+    [time-0800] 1fr
+    [time-0900] 1fr
+    [time-1000] 1fr
+    [time-1100] 1fr
+    [time-1200] 1fr
+    [time-1300] 1fr
+    [time-1400] 1fr
+    [time-1500] 1fr
+     [time-1600] 1fr
+    [time-1700] 1fr
+    [time-1800] 1fr
+    [time-1900] 1fr;
+
+    grid-template-columns:
+    [times] 4em
+    [track-1-start] 1fr
+    [track-1-end track-2-start] 1fr
+    [track-2-end track-3-start] 1fr
+    [track-3-end track-4-start] 1fr
+    [track-4-end track-5-start] 1fr
+      [track-5-end track-6-start] 1fr
+      [track-6-end track-7-start] 1fr
+    [track-7-end];
+}
+.day-view {
+    display: grid;
+    grid-gap: 1em;
+    grid-template-rows:
+     [time-0700] 1fr
+    [time-0800] 1fr
+    [time-0900] 1fr
+    [time-1000] 1fr
+    [time-1100] 1fr
+    [time-1200] 1fr
+    [time-1300] 1fr
+    [time-1400] 1fr
+     [time-1500] 1fr
+     [time-1600] 1fr
+     [time-1700] 1fr
+    [time-1800] 1fr
+    [time-1900] 1fr;
+
+
+    grid-template-columns:
+    [times] 4em
+    [track-1-start] 1fr
+    [track-1-end];
+}
+
+
+.time-slot {
+    grid-column: times;
+}
+
+.track-slot {
+    display: none;
+}
+
+@media screen and (min-width:700px) {
+    .track-slot {
+        display: block;
+        padding: 10px 5px 5px;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background-color: rgba(255,255,255,.9);
+        text-align: center;
+    }
+}
+
+
 
 /* Small-screen & fallback styles */
 .session {
