@@ -25,6 +25,66 @@ document.addEventListener("DOMContentLoaded", function () {
     let suggestionTimeouts = {};
     let calendar;
 
+    const translations = {
+        pl: {
+            "teacher": "Wykładowca",
+            "room": "Sala",
+            "subject": "Przedmiot",
+            "group": "Grupa",
+            "albumNumber": "Numer Albumu",
+            "filters": "Filtry",
+            "laboratoria": "Laboratoria",
+            "wyklady": "Wykłady",
+            "audytoria": "Audytoria",
+            "lektoraty": "Lektoraty",
+            "search": "Szukaj",
+            "reset": "Wyczyść filtry",
+            "week": "Tydzień",
+            "day": "Dzień",
+            "month": "Miesiąc",
+            "total": "Razem",
+            "noResults": "Brak wynіków",
+            "noFilters": "Nie wybrano filtrów :("
+        },
+        en: {
+            "teacher": "Teacher",
+            "room": "Room",
+            "subject": "Subject",
+            "group": "Group",
+            "albumNumber": "Album Number",
+            "filters": "Filters",
+            "laboratoria": "Laboratories",
+            "wyklady": "Lectures",
+            "audytoria": "Auditoriums",
+            "lektoraty": "Language Courses",
+            "search": "Search",
+            "reset": "Reset filters",
+            "week": "Week",
+            "day": "Day",
+            "month": "Month",
+            "total": "Total",
+            "noResults": "No Results",
+            "noFilters": "No filters were provided :("
+        },
+    };
+
+    function updateText(lang) {
+        document.documentElement.lang = lang;
+        const elements = document.querySelectorAll("[data-translation-key]");
+        elements.forEach((element) => {
+            const key = element.getAttribute("data-translation-key");
+            if (translations[lang] && translations[lang][key]) {
+                if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                    element.setAttribute('placeholder',translations[lang][key]);
+                } else {
+                    element.textContent = translations[lang][key];
+                }
+
+            }
+        });
+    }
+
+
     const lessonTypeColors = {
         laboratorium: "#1A8238",
         wykład: "#247C84",
@@ -156,12 +216,12 @@ document.addEventListener("DOMContentLoaded", function () {
             document.querySelectorAll(".fc-customViewSelector-button").forEach((button) => button.remove());
         });
     }
-
-    for (const lang of languageSwitchers) { // delete
+    for (const lang of languageSwitchers) {
         lang.addEventListener("click", function () {
             languageSwitchers.forEach((el) => el.classList.remove("active"));
             this.classList.add("active");
             const selectedLang = this.getAttribute("data-lang");
+            updateText(selectedLang);
             console.log(`Selected Language ${selectedLang}`);
         });
     }
@@ -275,6 +335,25 @@ document.addEventListener("DOMContentLoaded", function () {
                 '.dropdown-content input[type="checkbox"]:checked',
             ),
         ).map((checkbox) => checkbox.value);
+
+
+        const filterInputs = document.querySelectorAll(".filter-container input");
+        let isEmpty = true;
+
+        for (const input of filterInputs) {
+            if(input.value.trim() !== ""){
+                isEmpty = false;
+                break;
+            }
+        }
+
+        if(isEmpty){
+            alert(translations[document.documentElement.lang].noFilters);
+            successCallback([]);
+            return;
+        }
+
+
         const params = new URLSearchParams();
         params.append("start", formattedStartDate);
         params.append("end", formattedEndDate);
@@ -399,14 +478,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 const counterItem = document.createElement("div");
                 counterItem.classList.add("counter-item");
                 const label = document.createElement("span");
-                label.textContent = `${lessonType.charAt(0).toUpperCase() + lessonType.slice(1)}: ${count}`;
+                label.textContent = `${translations[document.documentElement.lang][lessonType] ? translations[document.documentElement.lang][lessonType].charAt(0).toUpperCase() + translations[document.documentElement.lang][lessonType].slice(1) : lessonType.charAt(0).toUpperCase() + lessonType.slice(1) }: ${count}`;
                 counterItem.appendChild(label);
                 counterContainer.appendChild(counterItem);
             }
         }
 
         const totalLessonsItem = document.createElement("div");
-        totalLessonsItem.textContent = `Razem: ${totalLessons}`;
+        totalLessonsItem.textContent = `${translations[document.documentElement.lang].total}: ${totalLessons}`;
         counterContainer.appendChild(totalLessonsItem);
 
     }
@@ -426,7 +505,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const label = document.createElement("span");
                 label.textContent =
-                    lessonType.charAt(0).toUpperCase() + lessonType.slice(1);
+                    translations[document.documentElement.lang][lessonType] ? translations[document.documentElement.lang][lessonType].charAt(0).toUpperCase() + translations[document.documentElement.lang][lessonType].slice(1): lessonType.charAt(0).toUpperCase() + lessonType.slice(1);
                 legendItem.appendChild(label);
                 legendContainer.appendChild(legendItem);
             }
@@ -498,7 +577,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 }else {
                     const listItem = document.createElement("li");
-                    listItem.textContent = `No Results for '${query}'`;
+                    listItem.textContent = `${translations[document.documentElement.lang].noResults} '${query}'`;
                     list.appendChild(listItem);
                     if (suggestionsContainer) {
                         suggestionsContainer.appendChild(list);
@@ -553,9 +632,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 !suggestionsContainer.contains(e.relatedTarget) &&
                 e.relatedTarget !== this
             ) {
-                setTimeout(() => {
-                    hideAllSuggestions();
-                }, 100);
+
+                hideAllSuggestions();
+
             }
         });
     }
@@ -603,6 +682,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     for (const el of searchBtn) {
         el.addEventListener("click", () => {
+            const filterInputs = document.querySelectorAll(".filter-container input");
+            let isEmpty = true;
+
+            for (const input of filterInputs) {
+                if(input.value.trim() !== ""){
+                    isEmpty = false;
+                    break;
+                }
+            }
+            if(isEmpty){
+                alert(translations[document.documentElement.lang].noFilters);
+                return;
+            }
+
+
             fetchSchedule();
             hideAllSuggestions();
         });
@@ -652,4 +746,5 @@ document.addEventListener("DOMContentLoaded", function () {
     initializeCalendar();
     fetchSchedule();
     renderFavoriteLinks();
+    updateText('pl')
 });
